@@ -40,7 +40,7 @@ void AMidnightArenaPlayerController::SetupInputComponent()
 
 		EnhancedInputComponent->BindAction(CameraZoomInputAction, ETriggerEvent::Triggered, this, &AMidnightArenaPlayerController::OnCameraZoomInputActionTriggered);
 		
-		// Setup touch input events
+		// Setup keyboard input events
 		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AMidnightArenaPlayerController::OnMoveInputActionTriggered);
 	}
 }
