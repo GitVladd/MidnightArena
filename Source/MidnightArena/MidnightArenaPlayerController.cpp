@@ -1,5 +1,4 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-#define TRACETYPE_LANDSCAPEONLY ECollisionChannel::ECC_GameTraceChannel1 //mb 6?
 
 #include "MidnightArenaPlayerController.h"
 #include "GameFramework/Pawn.h"
@@ -51,7 +50,7 @@ void AMidnightArenaPlayerController::OnLookAtInputActionTriggered()
 	bool bHitSuccessful = false;
 
 	if (AMidnightArenaCharacter* controlledCharacter = CastChecked< AMidnightArenaCharacter>(GetPawn())) {
-		bHitSuccessful = GetHitResultUnderCursor(TRACETYPE_LANDSCAPEONLY, true, Hit);
+		//bHitSuccessful = GetHitResultUnderCursor(TRACETYPE_LANDSCAPEONLY, true, Hit);
 
 		controlledCharacter->LookAtLocation(Hit.Location);
 	}
