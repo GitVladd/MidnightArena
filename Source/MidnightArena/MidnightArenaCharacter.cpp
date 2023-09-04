@@ -72,8 +72,10 @@ void AMidnightArenaCharacter::CameraZoom(float value)
 
 void AMidnightArenaCharacter::MoveCharacter(float axisX, float axisY)
 {
-	AddMovementInput(FVector(1.f, 0.f, 0.f), axisX);
-	AddMovementInput(FVector(0.f, 1.f, 0.f), axisY);
+	auto forwardVector = TopDownCameraComponent->GetForwardVector();
+	auto rightVector = TopDownCameraComponent->GetRightVector();
+	AddMovementInput(forwardVector, axisY);
+	AddMovementInput(rightVector, axisX);
 }
 
 void AMidnightArenaCharacter::LookAtLocation(FVector locationToLookAt)

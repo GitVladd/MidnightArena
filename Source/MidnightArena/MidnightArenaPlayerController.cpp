@@ -1,5 +1,5 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-#define TRACETYPE_LANDSCAPEONLY ECollisionChannel::ECC_GameTraceChannel1 //mb 6?
+#define TRACETYPE_LANDSCAPEONLY ECollisionChannel::ECC_GameTraceChannel1
 
 #include "MidnightArenaPlayerController.h"
 #include "GameFramework/Pawn.h"
