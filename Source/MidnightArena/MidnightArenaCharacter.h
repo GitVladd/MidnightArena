@@ -20,6 +20,8 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 
+public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 		float CameraZoomSpeed = 50.f;
 

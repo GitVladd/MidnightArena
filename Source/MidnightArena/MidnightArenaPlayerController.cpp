@@ -12,10 +12,6 @@
 
 AMidnightArenaPlayerController::AMidnightArenaPlayerController()
 {
-	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Default;
-	CachedDestination = FVector::ZeroVector;
-	FollowTime = 0.f;
 }
 
 void AMidnightArenaPlayerController::BeginPlay()
@@ -39,79 +35,40 @@ void AMidnightArenaPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
 		// Setup mouse input events
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &AMidnightArenaPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &AMidnightArenaPlayerController::OnSetDestinationTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &AMidnightArenaPlayerController::OnSetDestinationReleased);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &AMidnightArenaPlayerController::OnSetDestinationReleased);
+		EnhancedInputComponent->BindAction(LookAtInputAction, ETriggerEvent::Triggered, this, &AMidnightArenaPlayerController::OnLookAtInputActionTriggered);
 
+		EnhancedInputComponent->BindAction(CameraZoomInputAction, ETriggerEvent::Triggered, this, &AMidnightArenaPlayerController::OnCameraZoomInputActionTriggered);
+		
 		// Setup touch input events
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &AMidnightArenaPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AMidnightArenaPlayerController::OnTouchTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AMidnightArenaPlayerController::OnTouchReleased);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AMidnightArenaPlayerController::OnTouchReleased);
+		EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AMidnightArenaPlayerController::OnMoveInputActionTriggered);
 	}
 }
 
-void AMidnightArenaPlayerController::OnInputStarted()
+void AMidnightArenaPlayerController::OnLookAtInputActionTriggered()
 {
-	StopMovement();
-}
-
-// Triggered every frame when the input is held down
-void AMidnightArenaPlayerController::OnSetDestinationTriggered()
-{
-	// We flag that the input is being pressed
-	FollowTime += GetWorld()->GetDeltaSeconds();
-	
-	// We look for the location in the world where the player has pressed the input
 	FHitResult Hit;
 	bool bHitSuccessful = false;
-	if (bIsTouch)
-	{
-		bHitSuccessful = GetHitResultUnderFinger(ETouchIndex::Touch1, ECollisionChannel::ECC_Visibility, true, Hit);
-	}
-	else
-	{
-		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
-	}
 
-	// If we hit a surface, cache the location
-	if (bHitSuccessful)
-	{
-		CachedDestination = Hit.Location;
-	}
-	
-	// Move towards mouse pointer or touch
-	APawn* ControlledPawn = GetPawn();
-	if (ControlledPawn != nullptr)
-	{
-		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
+	if (AMidnightArenaCharacter* controlledCharacter = CastChecked< AMidnightArenaCharacter>(GetPawn())) {
+		//bHitSuccessful = GetHitResultUnderCursor(TRACETYPE_LANDSCAPEONLY, true, Hit);
+
+		controlledCharacter->LookAtLocation(Hit.Location);
 	}
 }
 
-void AMidnightArenaPlayerController::OnSetDestinationReleased()
+void AMidnightArenaPlayerController::OnCameraZoomInputActionTriggered(const FInputActionValue& Value)
 {
-	// If it was a short press
-	if (FollowTime <= ShortPressThreshold)
-	{
-		// We move there and spawn some particles
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+	if (AMidnightArenaCharacter* controlledCharacter = CastChecked<AMidnightArenaCharacter>(GetPawn())) {
+		controlledCharacter->CameraZoom(Value.Get<float>());
 	}
-
-	FollowTime = 0.f;
 }
 
-// Triggered every frame when the input is held down
-void AMidnightArenaPlayerController::OnTouchTriggered()
+void AMidnightArenaPlayerController::OnMoveInputActionTriggered(const FInputActionValue& Value)
 {
-	bIsTouch = true;
-	OnSetDestinationTriggered();
-}
+	if (AMidnightArenaCharacter* controlledCharacter = CastChecked<AMidnightArenaCharacter>(GetPawn())) {
 
-void AMidnightArenaPlayerController::OnTouchReleased()
-{
-	bIsTouch = false;
-	OnSetDestinationReleased();
+		FVector2D Axis2DValue = Value.Get<FVector2D>();
+
+		controlledCharacter->MoveCharacter(Axis2DValue.X, Axis2DValue.Y);
+	}
 }
