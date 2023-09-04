@@ -10,6 +10,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/Engine.h"
 
 AMidnightArenaCharacter::AMidnightArenaCharacter()
 {
@@ -45,7 +48,43 @@ AMidnightArenaCharacter::AMidnightArenaCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
+void AMidnightArenaCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//Replicate current health.
+	//DOREPLIFETIME(AMidnightArenaCharacter, CurrentHealth);
+}
+
 void AMidnightArenaCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+}
+
+void AMidnightArenaCharacter::CameraZoom(float value)
+{
+	float newCameraDistance = CameraBoom->TargetArmLength + (value * CameraZoomSpeed);
+
+	newCameraDistance = FMath::Clamp(newCameraDistance, CameraMinDistance, CameraMaxDistance);
+
+	CameraBoom->TargetArmLength = newCameraDistance;
+}
+
+void AMidnightArenaCharacter::MoveCharacter(float axisX, float axisY)
+{
+	AddMovementInput(FVector(1.f, 0.f, 0.f), axisX);
+	AddMovementInput(FVector(0.f, 1.f, 0.f), axisY);
+}
+
+void AMidnightArenaCharacter::LookAtLocation(FVector locationToLookAt)
+{
+	//1
+	FRotator rotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), locationToLookAt);
+
+	//2
+	//FRotator rotation = UKismetMathLibrary::MakeRotFromX(GetActorLocation() - locationToLookAt);
+
+	FQuat resultQuat(FRotator(0.f, rotation.Yaw, 0.0f));
+
+	SetActorRotation(resultQuat);
 }
