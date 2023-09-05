@@ -5,6 +5,9 @@
 #include "Engine/Engine.h"
 #include "GameFramework/Pawn.h"
 #include "MidnightArenaCharacter.h"
+#include <Kismet/GameplayStatics.h>
+
+class MidnightArenaPlayerController;
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -41,6 +44,14 @@ void UHealthComponent::OnCurrentHealthUpdate()
     if (ACharacter* owner = Cast<ACharacter>(GetOwner()))
     {
         if (owner->IsLocallyControlled()) {
+            //Update UI
+            /*class MidnightArenaPlayerController* controller = Cast<class MidnightArenaPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+            if (controller)
+            {
+                controller;
+            }*/
+
+
             FString healthMessage = FString::Printf(TEXT("You now have %f health remaining."), CurrentHealth);
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
 
