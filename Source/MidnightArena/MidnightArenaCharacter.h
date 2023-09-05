@@ -37,15 +37,12 @@ public:
 
 private:
 	/** Top down camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* TopDownCameraComponent;
 
 	/** Camera boom positioning the camera above the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class USpringArmComponent* CameraBoom;
-
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = true))
-		class UHealthComponent* HealthComponent;
 
 
 public:
@@ -63,9 +60,5 @@ public:
 
 	UFUNCTION(Category = "Movement")
 		void LookAtLocation(FVector locationToLookAt);
-
-	/** Event for taking damage. Overridden from APawn.*/
-	UFUNCTION(BlueprintCallable, Category = "Health")
-		float TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
 
