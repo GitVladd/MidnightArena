@@ -51,7 +51,6 @@ void UHealthComponent::OnCurrentHealthUpdate()
                 controller;
             }*/
 
-
             FString healthMessage = FString::Printf(TEXT("You now have %f health remaining."), CurrentHealth);
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
 
@@ -93,38 +92,37 @@ void UHealthComponent::OnRep_MaxHealth()
 }
 
 
-void UHealthComponent::SetCurrentHealth(float healthValue)
-{
-    
-    if (GetOwner()->GetLocalRole() == ROLE_Authority)
-    {
-        CurrentHealth = FMath::Clamp(healthValue, 0.f, MaxHealth);
-        OnCurrentHealthUpdate();
+bool UHealthComponent::ServerDealDamage_Validate(float damage) {
+    if (damage < 0) {
+        return true;
     }
+    return false;
 }
-
-void UHealthComponent::DealDamage(float damage)
-{
+void UHealthComponent::ServerDealDamage_Implementation(float damage) {
     if (GetOwner()->GetLocalRole() == ROLE_Authority)
     {
         float NewHealth = CurrentHealth - damage;
         CurrentHealth = FMath::Clamp(NewHealth, 0.f, MaxHealth);
-        OnCurrentHealthUpdate();
+        //OnCurrentHealthUpdate();
     }
 }
 
-void UHealthComponent::Heal(float HealAmount)
-{
+
+bool UHealthComponent::ServerHeal_Validate(float HealAmount) {
+    if (HealAmount < 0) {
+        return true;
+    }
+    return false;
+};
+void UHealthComponent::ServerHeal_Implementation(float HealAmount) {
+
     if (GetOwner()->GetLocalRole() == ROLE_Authority)
     {
         float NewHealth = CurrentHealth + HealAmount;
         CurrentHealth = FMath::Clamp(NewHealth, 0.f, MaxHealth);
-        OnCurrentHealthUpdate();
+        //OnCurrentHealthUpdate();
     }
-}
-
-
-
+};
 // Called every frame
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {

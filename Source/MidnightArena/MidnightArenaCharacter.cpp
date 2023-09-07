@@ -105,6 +105,6 @@ void AMidnightArenaCharacter::LookAtLocation(FVector locationToLookAt)
 
 float AMidnightArenaCharacter::TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	HealthComponent->DealDamage(DamageTaken);
+	HealthComponent->ServerDealDamage(DamageTaken);
 	return DamageTaken;
 }
