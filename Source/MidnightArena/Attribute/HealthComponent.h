@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "AttributeComponent.h"
 #include "HealthComponent.generated.h"
 
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MIDNIGHTARENA_API UHealthComponent : public UActorComponent
+class MIDNIGHTARENA_API UHealthComponent : public UAttributeComponent
 {
 	GENERATED_BODY()
 
@@ -20,35 +21,32 @@ public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	/** The player's maximum health. This is the highest value of their health can be. This value is a value of the player's health, which starts at when spawned.*/
-	UPROPERTY(ReplicatedUsing = OnRep_MaxHealth, EditDefaultsOnly, SimpleDisplay, Meta = ( ClampMin = "0" ))
-		float MaxHealth = 100.0f;
-
-	/** The player's current health. When reduced to 0, they are considered dead.*/
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth, EditDefaultsOnly, SimpleDisplay, Meta = ( ClampMin = "0" ))
-		float CurrentHealth;
-
-	/** RepNotify for changes made to max health.*/
-	UFUNCTION()
-		void OnRep_MaxHealth();
-	/** RepNotify for changes made to current health.*/
-	UFUNCTION()
-		void OnRep_CurrentHealth();
-
-protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	void OnCurrentHealthUpdate();
-	void OnMaxHealthUpdate();
+	void OnRep_CurrentAttribute() override;
 public:	
 	/** Getter for Max Health.*/
-	UFUNCTION(BlueprintPure, Category = "Health")
-		FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+	UFUNCTION(BlueprintPure, Category = "Health|Max")
+		FORCEINLINE float GetTotalMaxHealth() const { return TotalMaxAttribute; }
 
-	/** Getter for Current Health.*/
-	UFUNCTION(BlueprintPure, Category = "Health")
-		FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
+	UFUNCTION(BlueprintPure, Category = "Health|Max")
+		FORCEINLINE float GetBaseMaxHealth() const { return BaseMaxAttribute; }
+	UFUNCTION(BlueprintPure, Category = "Health|Max|Modifier")
+
+		FORCEINLINE TArray<FAttributeModifier> GetMaxHealthModifiersList() const { return MaxAttributeModifiersList; }
+
+	UFUNCTION(BlueprintPure, Category = "Health|Regeneration")
+		FORCEINLINE float GetTotalRegenerationHealth() const { return TotalRegenerationAttribute; }
+
+	UFUNCTION(BlueprintPure, Category = "Health|Regeneration")
+		FORCEINLINE float GetBaseRegenerationHealth() const { return BaseRegenerationAttribute; }
+
+	UFUNCTION(BlueprintPure, Category = "Health|Regeneration|Modifier")
+		FORCEINLINE TArray<FAttributeModifier> GetRegenerationHealthModifiersList() const { return RegenerationAttributeModifiersList; }
+
+	UFUNCTION(BlueprintPure, Category = "Health|Current")
+		FORCEINLINE float GetCurrentHealth() const { return CurrentAttribute; }
 
 
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Health")

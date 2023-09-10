@@ -15,18 +15,11 @@ UHealthComponent::UHealthComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	CurrentHealth = MaxHealth;
 }
 
 void UHealthComponent::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	//Replicate max health.
-	DOREPLIFETIME(UHealthComponent, MaxHealth);
-
-	//Replicate current health.
-	DOREPLIFETIME(UHealthComponent, CurrentHealth);
 }
 // Called when the game starts
 void UHealthComponent::BeginPlay()
@@ -36,8 +29,7 @@ void UHealthComponent::BeginPlay()
 	// ...
 	
 }
-
-void UHealthComponent::OnCurrentHealthUpdate()
+void UHealthComponent::OnRep_CurrentAttribute()
 {
     //Client-specific functionality
 
@@ -51,10 +43,10 @@ void UHealthComponent::OnCurrentHealthUpdate()
                 controller;
             }*/
 
-            FString healthMessage = FString::Printf(TEXT("You now have %f health remaining."), CurrentHealth);
+            FString healthMessage = FString::Printf(TEXT("You now have %f health remaining."), GetCurrentHealth());
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
 
-            if (CurrentHealth <= 0)
+            if (GetCurrentHealth() <= 0)
             {
                 FString deathMessage = FString::Printf(TEXT("You have been killed."));
                 GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, deathMessage);
@@ -65,7 +57,7 @@ void UHealthComponent::OnCurrentHealthUpdate()
     //Server-specific functionality
     if (GetOwner()->GetLocalRole() == ROLE_Authority)
     {
-        FString healthMessage = FString::Printf(TEXT("%s now has %f health remaining."), *GetFName().ToString(), CurrentHealth);
+        FString healthMessage = FString::Printf(TEXT("%s now has %f health remaining."), *GetFName().ToString(), GetCurrentHealth());
         GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
     }
 
@@ -73,22 +65,6 @@ void UHealthComponent::OnCurrentHealthUpdate()
     /*
         Any special functionality that should occur as a result of damage or death should be placed here.
     */
-}
-
-void UHealthComponent::OnRep_CurrentHealth()
-{
-    OnCurrentHealthUpdate();
-}
-
-// TO DO
-void UHealthComponent::OnMaxHealthUpdate() 
-{
-    return;
-}
-
-void UHealthComponent::OnRep_MaxHealth()
-{
-    OnMaxHealthUpdate();
 }
 
 
@@ -101,8 +77,8 @@ bool UHealthComponent::ServerDealDamage_Validate(float damage) {
 void UHealthComponent::ServerDealDamage_Implementation(float damage) {
     if (GetOwner()->GetLocalRole() == ROLE_Authority)
     {
-        float NewHealth = CurrentHealth - damage;
-        CurrentHealth = FMath::Clamp(NewHealth, 0.f, MaxHealth);
+        float NewHealth = CurrentAttribute - damage;
+        CurrentAttribute = FMath::Clamp(NewHealth, 0.f, TotalMaxAttribute);
         //OnCurrentHealthUpdate();
     }
 }
@@ -118,15 +94,21 @@ void UHealthComponent::ServerHeal_Implementation(float HealAmount) {
 
     if (GetOwner()->GetLocalRole() == ROLE_Authority)
     {
-        float NewHealth = CurrentHealth + HealAmount;
-        CurrentHealth = FMath::Clamp(NewHealth, 0.f, MaxHealth);
+        float NewHealth = CurrentAttribute + HealAmount;
+        CurrentAttribute = FMath::Clamp(NewHealth, 0.f, TotalMaxAttribute);
         //OnCurrentHealthUpdate();
     }
 };
+
 // Called every frame
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    CurrentTime += DeltaTime;
+    if (CurrentTime >= TickRateAttribute) {
+        ServerHeal(GetTotalRegenerationHealth());
+        CurrentTime = 0;
+    }
 
     // ...
 }
