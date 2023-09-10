@@ -31,7 +31,7 @@ struct FAttributeModifier {
 	GENERATED_BODY()
 	EAttributeModifierType ModifierType;
 	float Amount;
-	UObject* ModifierInsigator; //?
+	UObject* ModifierInstigator; //?
 };
 
 
