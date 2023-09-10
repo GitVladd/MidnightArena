@@ -44,10 +44,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 		class USpringArmComponent* CameraBoom;
 
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = true))
-		class UHealthComponent* HealthComponent;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = true))
+		class UAttributeComponent* HealthComponent;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Mana", meta = (AllowPrivateAccess = true))
+		class UAttributeComponent* ManaComponent;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Stamina", meta = (AllowPrivateAccess = true))
+		class UAttributeComponent* StaminaComponent;
 
-
+private:
+	void InitHealthComponent();
 public:
 	/** Returns TopDownCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }

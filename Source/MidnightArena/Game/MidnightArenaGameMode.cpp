@@ -1,8 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MidnightArenaGameMode.h"
-#include "MidnightArenaPlayerController.h"
-#include "MidnightArenaCharacter.h"
+#include "MidnightArena/Controller/MidnightArenaPlayerController.h"
+#include "MidnightArena/Character/MidnightArenaCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AMidnightArenaGameMode::AMidnightArenaGameMode()

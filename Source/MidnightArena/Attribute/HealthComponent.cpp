@@ -4,7 +4,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
 #include "GameFramework/Pawn.h"
-#include "MidnightArenaCharacter.h"
+#include "MidnightArena/Character/MidnightArenaCharacter.h"
 #include <Kismet/GameplayStatics.h>
 
 class MidnightArenaPlayerController;
