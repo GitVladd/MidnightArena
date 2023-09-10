@@ -3,3 +3,11 @@
 
 #include "Effect.h"
 
+void UEffect::SetEffectOwner(ABaseCharacter* effectOwner)
+{
+	if (!IsValid(effectOwner)) return;
+	
+	if (IsValid(EffectOwner)) return;
+
+	EffectOwner = effectOwner;
+}
