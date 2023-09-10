@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "AttributeComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "MidnightArena/Attribute/AttributeComponent.h"
 
@@ -10,6 +11,9 @@ UAttributeComponent::UAttributeComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	TotalMaxAttribute = BaseMaxAttribute;
+	TotalRegenerationAttribute = BaseRegenerationAttribute;
+	CurrentAttribute = TotalMaxAttribute;
 	// ...
 }
 
@@ -28,16 +32,6 @@ void UAttributeComponent::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>&
 	DOREPLIFETIME(UAttributeComponent, CurrentTime);
 }
 
-UPROPERTY(ReplicatedUsing = OnRep_RegenerationAttributeModifiersList, Category = "Regeneration|Modifier")
-TArray<FAttributeModifier> RegenerationAttributeModifiersList;
-
-UPROPERTY(ReplicatedUsing = OnRep_CurrentAttribute, EditDefaultsOnly, SimpleDisplay, Category = "Current")
-float CurrentAttribute;
-
-UPROPERTY(Replicated, EditDefaultsOnly, SimpleDisplay, Category = "TickRate")
-float TickRateAttribute = 0;
-UPROPERTY(Replicated, VisibleAnywhere, SimpleDisplay, Category = "TickRate")
-float CurrentTime;
 // Called when the game starts
 void UAttributeComponent::BeginPlay()
 {
@@ -55,20 +49,3 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	// ...
 }
-
-/*
-bool UHealthComponent::ServerDealDamage_Validate(float damage) {
-	if (damage < 0) {
-		return true;
-	}
-	return false;
-}
-void UHealthComponent::ServerDealDamage_Implementation(float damage) {
-	if (GetOwner()->GetLocalRole() == ROLE_Authority)
-	{
-		float NewHealth = CurrentHealth - damage;
-		CurrentHealth = FMath::Clamp(NewHealth, 0.f, MaxHealth);
-		//OnCurrentHealthUpdate();
-	}
-}
-*/

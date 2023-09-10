@@ -8,7 +8,10 @@
 #include "AttributeDataTypes.h"
 #include "AttributeComponent.generated.h"
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+
+// TO DO Make it Not tickable if regeneration == 0 and Modifers are empty
+
+UCLASS(Abstract, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class MIDNIGHTARENA_API UAttributeComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -17,7 +20,7 @@ public:
 	// Sets default values for this component's properties
 	UAttributeComponent();
 
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 
@@ -33,7 +36,7 @@ protected:
 		float TotalRegenerationAttribute;
 
 	UPROPERTY(ReplicatedUsing = OnRep_BaseRegenerationAttribute, EditDefaultsOnly, SimpleDisplay, Category = "Regeneration")
-		float BaseRegenerationAttribute;
+		float BaseRegenerationAttribute = 1.f;
 
 	UPROPERTY(ReplicatedUsing = OnRep_RegenerationAttributeModifiersList, VisibleAnywhere, Category = "Regeneration|Modifier")
 		TArray<FAttributeModifier> RegenerationAttributeModifiersList;
@@ -48,25 +51,26 @@ protected:
 
 
 protected:
-	UFUNCTION(Category = "Max")
-		void OnRep_TotalMaxAttribute() { return; }
-	UFUNCTION(Category = "Max")
-		void OnRep_BaseMaxAttribute() { return; }
-	UFUNCTION(Category = "Max|Modifier")
-		void OnRep_MaxAttributeModifiersList(){ ; }
-	UFUNCTION(Category = "Regeneration")
-		void OnRep_TotalRegenerationAttribute() { ; }
-	UFUNCTION(Category = "Regeneration")
-		void OnRep_BaseRegenerationAttribute() { ; }
-	UFUNCTION(Category = "Regeneration|Modifier")
-		void OnRep_RegenerationAttributeModifiersList(){ ; }
-	UFUNCTION(Category = "Current")
-		void OnRep_CurrentAttribute() { ; }
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+	UFUNCTION(Category = "Max")
+		virtual void OnRep_TotalMaxAttribute() { ; }
+	UFUNCTION(Category = "Max")
+		virtual void OnRep_BaseMaxAttribute() { ; }
+	UFUNCTION(Category = "Max|Modifier")
+		virtual void OnRep_MaxAttributeModifiersList(){ ; }
+	UFUNCTION(Category = "Regeneration")
+		virtual void OnRep_TotalRegenerationAttribute() { ; }
+	UFUNCTION(Category = "Regeneration")
+		virtual void OnRep_BaseRegenerationAttribute() { ; }
+	UFUNCTION(Category = "Regeneration|Modifier")
+		virtual void OnRep_RegenerationAttributeModifiersList(){ ; }
+	UFUNCTION(Category = "Current")
+		virtual void OnRep_CurrentAttribute() { ; }
+
+	/*
 	UFUNCTION(BlueprintPure, Category = "Max")
 		FORCEINLINE float GetTotalMaxAttribute() const { return TotalMaxAttribute; }
 
@@ -87,20 +91,8 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Current")
 		FORCEINLINE float GetCurrentAttribute() const { return CurrentAttribute; }
-
+		*/
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	/*
-		UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Health")
-		void ServerDealDamage(float damage);
-	bool ServerDealDamage_Validate(float damage);
-	void ServerDealDamage_Implementation(float damage);
-
-
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Health")
-		void ServerHeal(float HealAmount);
-	bool ServerHeal_Validate(float HealAmount);
-	void ServerHeal_Implementation(float HealAmount);
-	*/
 };
