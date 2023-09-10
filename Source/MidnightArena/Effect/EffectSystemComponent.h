@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Effect.h"
 #include "EffectSystemComponent.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MIDNIGHTARENA_API UEffectSystemComponent : public UActorComponent
@@ -19,6 +19,9 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	TArray<UEffect> PermanentEffects;
+
 
 public:	
 	// Called every frame
