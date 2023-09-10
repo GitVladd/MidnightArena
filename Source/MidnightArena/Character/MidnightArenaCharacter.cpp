@@ -5,7 +5,6 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "MidnightArena/Attribute/HealthComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -43,10 +42,6 @@ AMidnightArenaCharacter::AMidnightArenaCharacter()
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-	//Health Component
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
-	HealthComponent->SetIsReplicated(true);
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -100,11 +95,4 @@ void AMidnightArenaCharacter::LookAtLocation(FVector locationToLookAt)
 	FQuat resultQuat(FRotator(0.f, rotation.Yaw, 0.0f));
 
 	SetActorRotation(resultQuat);
-}
-
-
-float AMidnightArenaCharacter::TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	HealthComponent->ServerDealDamage(DamageTaken);
-	return DamageTaken;
 }
