@@ -69,7 +69,12 @@ void AMidnightArenaPlayerController::OnMoveInputActionTriggered(const FInputActi
 	if (AMidnightArenaCharacter* controlledCharacter = CastChecked<AMidnightArenaCharacter>(GetPawn())) {
 
 		FVector2D Axis2DValue = Value.Get<FVector2D>();
+		if (Axis2DValue.X != 0) {
+			controlledCharacter->MoveAlongCameraAxisX(Axis2DValue.X);
 
-		controlledCharacter->MoveCharacter(Axis2DValue.X, Axis2DValue.Y);
+		}
+		if (Axis2DValue.Y != 0) {
+			controlledCharacter->MoveAlongCameraAxisY(Axis2DValue.Y);
+		}
 	}
 }

@@ -21,6 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	TArray<UEffect> PermanentEffects;
+	TArray<UEffect> TemporalEffects;
 
 
 public:	

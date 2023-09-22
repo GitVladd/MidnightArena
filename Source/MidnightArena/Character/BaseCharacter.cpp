@@ -3,7 +3,9 @@
 
 #include "BaseCharacter.h"
 #include "Components/CapsuleComponent.h"
-#include "MidnightArena/Attribute/HealthComponent.h"
+#include "MidnightArena/Attribute/MainAttributes/HealthComponent.h"
+#include "MidnightArena/Attribute/MainAttributes/ManaComponent.h"
+#include "MidnightArena/Attribute/MainAttributes/StaminaComponent.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -17,6 +19,12 @@ ABaseCharacter::ABaseCharacter()
 	//Health Component
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 	HealthComponent->SetIsReplicated(true);
+
+	ManaComponent = CreateDefaultSubobject<UManaComponent>(TEXT("ManaComponent"));
+	ManaComponent->SetIsReplicated(true);
+
+	StaminaComponent = CreateDefaultSubobject<UStaminaComponent>(TEXT("StaminaComponent"));
+	StaminaComponent->SetIsReplicated(true);
 }
 
 
@@ -25,12 +33,14 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	//Replicate current health.
-	DOREPLIFETIME(ABaseCharacter, HealthComponent);
+	DOREPLIFETIME_CONDITION(ABaseCharacter, HealthComponent, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(ABaseCharacter, ManaComponent, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(ABaseCharacter, StaminaComponent, COND_OwnerOnly);
 }
 
 float  ABaseCharacter::TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	HealthComponent->ServerDealDamage(DamageTaken);
+	HealthComponent->DecreaseCurrentAttribute(DamageTaken);
 	return DamageTaken;
 }
 
@@ -38,7 +48,6 @@ float  ABaseCharacter::TakeDamage(float DamageTaken, struct FDamageEvent const& 
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

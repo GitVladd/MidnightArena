@@ -41,37 +41,6 @@
 //	bool UseSkill();
 //};
 //
-//UENUM()
-//enum class EEffectDurationType : uint8 {
-//
-//	Permanent UMETA(DisplayName = "Permanent", ShortToolTip = "Doesn`t have a duration"),
-//	Temporal UMETA(DisplayName = "Temporal", ShortToolTip = "Has a duration")
-//};
-//
-//
-//UCLASS(Abstract)
-//class MIDNIGHTARENA_API UStatusEffect {
-//	GENERATED_BODY()
-//	float TotalDuration;
-//	float CurrentDuration;
-//	float TickTime;
-//	void SetIsTickable(bool isTickable);
-//	void OnStartEffect();
-//	void TickEffect();
-//	void OnEndEffect();
-//};
-//
-//
-//UCLASS()
-//class MIDNIGHTARENA_API UPermanentStatusEffect : public UStatusEffect {
-//	GENERATED_BODY()
-//};
-//
-//
-//UCLASS()
-//class MIDNIGHTARENA_API UTemporalStatusEffect : public UStatusEffect {
-//	GENERATED_BODY()
-//};
 
 
 

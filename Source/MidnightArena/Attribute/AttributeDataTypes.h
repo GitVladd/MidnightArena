@@ -6,15 +6,13 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AttributeDataTypes.generated.h"
 
-/**
- * 
- */
+#define DEFAULT_ATTRIBUTE_TICK_RATE 0.1f
 
 UENUM(BlueprintType)
-enum class EMainAttributeTypeName : uint8 {
-	Health UMETA(DisplayName = "Health"),
-	Mana UMETA(DisplayName = "Mana"),
-	Stamina UMETA(DisplayName = "Stamina")
+enum class EMainAttributeModifiedProperty : uint8 {
+	Current UMETA(DisplayName = "Current"),
+	Max UMETA(DisplayName = "Max"),
+	Regen UMETA(DisplayName = "Regen")
 };
 
 
@@ -29,11 +27,16 @@ enum class EAttributeModifierType : uint8 {
 USTRUCT(BlueprintType)
 struct FAttributeModifier {
 	GENERATED_BODY()
-	EAttributeModifierType ModifierType;
-	float Amount;
-	UObject* ModifierInstigator; //?
-};
 
+	UPROPERTY(EditDefaultsOnly) TSubclassOf<class UAttributeComponent> AttributeComponentClass;
+
+	UPROPERTY(EditDefaultsOnly) EAttributeModifierType ModifierType;
+
+	UPROPERTY(EditDefaultsOnly) EMainAttributeModifiedProperty ModifiedProperty;
+
+	UPROPERTY(EditDefaultsOnly) float Amount;
+
+};
 
 
 

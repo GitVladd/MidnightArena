@@ -14,6 +14,12 @@ class MIDNIGHTARENA_API ABaseCharacter : public ACharacter
 private:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = true))
 		class UHealthComponent* HealthComponent;
+
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Mana", meta = (AllowPrivateAccess = true))
+		class UManaComponent* ManaComponent;
+
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Stamina", meta = (AllowPrivateAccess = true))
+		class UStaminaComponent* StaminaComponent;
 public:
 	// Sets default values for this character's properties
 	ABaseCharacter();

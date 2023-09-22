@@ -12,6 +12,7 @@
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/Engine.h"
 
 AMidnightArenaCharacter::AMidnightArenaCharacter()
@@ -43,17 +44,24 @@ AMidnightArenaCharacter::AMidnightArenaCharacter()
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+
+	//Create a widget
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(RootComponent);
+
+
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
+void AMidnightArenaCharacter::BeginPlay() {
+	Super::BeginPlay();
+}
+
 void AMidnightArenaCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	//Replicate current health.
-	//DOREPLIFETIME(AMidnightArenaCharacter, CurrentHealth);
 }
 
 void AMidnightArenaCharacter::Tick(float DeltaSeconds)
@@ -70,18 +78,35 @@ void AMidnightArenaCharacter::CameraZoom(float value)
 	CameraBoom->TargetArmLength = newCameraDistance;
 }
 
-void AMidnightArenaCharacter::MoveCharacter(float axisX, float axisY)
-{
-	auto forwardVector = TopDownCameraComponent->GetForwardVector();
-	if (forwardVector.X > 0) forwardVector.X = 1;
-	if (forwardVector.Y > 0) forwardVector.Y = 1;
-	forwardVector.Z = 0;
-	auto rightVector = TopDownCameraComponent->GetRightVector();
-	if (rightVector.X > 0) rightVector.X = 1;
-	if (rightVector.Y > 0)rightVector.Y = 1;
-	rightVector.Z = 0;
-	AddMovementInput(forwardVector, axisY);
-	AddMovementInput(rightVector, axisX);
+
+void AMidnightArenaCharacter::MoveAlongControllerAxisX(float Value) {
+	if (Controller != nullptr && Value != 0.f) {
+		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
+		const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+		AddMovementInput(Direction, Value);
+	}
+}
+void AMidnightArenaCharacter::MoveAlongControllerAxisY(float Value) {
+	if (Controller != nullptr && Value != 0.f) {
+		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
+		const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X));
+		AddMovementInput(Direction, Value);
+	}
+}
+
+void AMidnightArenaCharacter::MoveAlongCameraAxisX(float Value) {
+	if (Controller != nullptr && Value != 0.f) {
+		const FRotator YawRotation(0.f, TopDownCameraComponent->GetComponentRotation().Yaw, 0.f);
+		const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+		AddMovementInput(Direction, Value);
+	}
+}
+void AMidnightArenaCharacter::MoveAlongCameraAxisY(float Value) {
+	if (Controller != nullptr && Value != 0.f) {
+		const FRotator YawRotation(0.f, TopDownCameraComponent->GetComponentRotation().Yaw, 0.f);
+		const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X));
+		AddMovementInput(Direction, Value);
+	}
 }
 
 void AMidnightArenaCharacter::LookAtLocation(FVector locationToLookAt)

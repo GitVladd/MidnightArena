@@ -11,3 +11,12 @@ void UEffect::SetEffectOwner(ABaseCharacter* effectOwner)
 
 	EffectOwner = effectOwner;
 }
+
+void UEffect::SetEffectInstigator(ABaseCharacter* effectInstigator)
+{
+	if (!IsValid(effectInstigator)) return;
+
+	if (IsValid(EffectInstigator)) return;
+
+	EffectInstigator = effectInstigator;
+}

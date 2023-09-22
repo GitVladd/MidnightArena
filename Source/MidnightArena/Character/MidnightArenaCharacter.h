@@ -33,6 +33,12 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 		class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Widget, meta = (AllowPrivateAccess = true))
+		class UWidgetComponent* OverheadWidget;
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	AMidnightArenaCharacter();
 
@@ -48,9 +54,19 @@ public:
 	UFUNCTION(Category = Camera)
 		void CameraZoom(float value);
 	UFUNCTION(Category = "Movement")
-		void MoveCharacter(float axisX, float axisY);
+		void MoveAlongControllerAxisX(float Value);
+
+	UFUNCTION(Category = "Movement")
+		void MoveAlongControllerAxisY(float Value);
+	UFUNCTION(Category = "Movement")
+		void MoveAlongCameraAxisX(float Value);
+
+	UFUNCTION(Category = "Movement")
+		void MoveAlongCameraAxisY(float Value);
+
 	UFUNCTION(Category = "Movement")
 		void LookAtLocation(FVector locationToLookAt);
+
 
 };
 

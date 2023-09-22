@@ -5,39 +5,36 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "MidnightArena/Character/BaseCharacter.h"
+#include "MidnightArena/Attribute/AttributeDataTypes.h"
 #include "Effect.generated.h"
 
 /**
- * 
+ *
  */
-UCLASS()
+UCLASS(Abstract)
 class MIDNIGHTARENA_API UEffect : public UObject
 {
 	GENERATED_BODY()
 private:
+	UPROPERTY(EditDefaultsOnly) TArray<FAttributeModifier> OnStartAttributeModifiers;
+
 	ABaseCharacter* EffectOwner;
+	ABaseCharacter* EffectInstigator;
 public:
 	void SetEffectOwner(ABaseCharacter* EffectOwner);
-	ABaseCharacter* GetEffectOwner() { return EffectOwner; }
+
+	UFUNCTION(BlueprintCallable) ABaseCharacter* GetEffectOwner() { return EffectOwner; }
+
+	void SetEffectInstigator(ABaseCharacter* EffectInstigator);
+
+	UFUNCTION(BlueprintCallable) ABaseCharacter* GetEffectInstigator() { return EffectInstigator; }
 protected:
-	virtual void OnStartEffect() { ; }
-	virtual void OnEndEffect() { ; }
+	UFUNCTION(BlueprintNativeEvent) void OnStartEffect();
+
+	virtual void OnStartEffect_Implementation() { ; }
+
+	UFUNCTION(BlueprintNativeEvent) void OnEndEffect();
+
+	virtual void OnEndEffect_Implementation() { ; }
 };
 
-
-UCLASS()
-class MIDNIGHTARENA_API UPermanentEffect : public UEffect {
-	GENERATED_BODY()
-};
-
-
-UCLASS()
-class MIDNIGHTARENA_API UTemporalEffect : public UEffect {
-	GENERATED_BODY()
-private:
-	float TotalDuration;
-	float CurrentDuration;
-	float TickTime;
-public:
-	void TickEffect() { ; }
-};

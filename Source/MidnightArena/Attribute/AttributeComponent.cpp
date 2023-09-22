@@ -2,17 +2,15 @@
 
 #include "AttributeComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "MidnightArena/Attribute/AttributeComponent.h"
 
 // Sets default values for this component's properties
 UAttributeComponent::UAttributeComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	TotalMaxAttribute = BaseMaxAttribute;
-	TotalRegenerationAttribute = BaseRegenerationAttribute;
 	CurrentAttribute = TotalMaxAttribute;
 	// ...
 }
@@ -21,15 +19,10 @@ void UAttributeComponent::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>&
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UAttributeComponent, TotalMaxAttribute);
-	DOREPLIFETIME(UAttributeComponent, BaseMaxAttribute);
-	DOREPLIFETIME(UAttributeComponent, MaxAttributeModifiersList);
-	DOREPLIFETIME(UAttributeComponent, TotalRegenerationAttribute);
-	DOREPLIFETIME(UAttributeComponent, BaseRegenerationAttribute);
-	DOREPLIFETIME(UAttributeComponent, RegenerationAttributeModifiersList);
-	DOREPLIFETIME(UAttributeComponent, CurrentAttribute);
-	DOREPLIFETIME(UAttributeComponent, TickRateAttribute);
-	DOREPLIFETIME(UAttributeComponent, CurrentTime);
+	DOREPLIFETIME_CONDITION(UAttributeComponent, TotalMaxAttribute, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UAttributeComponent, BaseMaxAttribute, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UAttributeComponent, MaxAttributeModifiersList, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UAttributeComponent, CurrentAttribute, COND_OwnerOnly);
 }
 
 // Called when the game starts
@@ -48,4 +41,58 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UAttributeComponent::IncreaseCurrentAttribute(float Amount)
+{
+	if (Amount > 0) {
+		float NewCurrent = CurrentAttribute + Amount;
+		CurrentAttribute = FMath::Clamp(NewCurrent, 0.f, TotalMaxAttribute);
+	}
+
+	if (APawn* obj = Cast<APawn>(GetOwner())) {
+		if (obj->IsLocallyControlled()) OnCurrentAttributeChange();
+	}
+}
+
+void UAttributeComponent::DecreaseCurrentAttribute(float Amount)
+{
+	if (Amount > 0) {
+		float NewCurrent = CurrentAttribute - Amount;
+		CurrentAttribute = FMath::Clamp(NewCurrent, 0.f, TotalMaxAttribute);
+	}
+
+	if (APawn* obj = Cast<APawn>(GetOwner())) {
+		if (obj->IsLocallyControlled()) OnCurrentAttributeChange();
+	}
+}
+
+void UAttributeComponent::OnCurrentAttributeChange() 
+{ 
+	; 
+}
+
+void UAttributeComponent::OnTotalMaxAttributeChange() 
+{
+	; 
+}
+
+void UAttributeComponent::OnRep_TotalMaxAttribute()
+{
+	;
+}
+
+void UAttributeComponent::OnRep_BaseMaxAttribute()
+{
+	;
+}
+
+void UAttributeComponent::OnRep_MaxAttributeModifiersList()
+{
+	;
+}
+
+void UAttributeComponent::OnRep_CurrentAttribute()
+{
+	;
 }
